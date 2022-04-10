@@ -1,6 +1,6 @@
 resource "google_cloudfunctions_function" "function_http" {
   count   = var.trigger_type == local.TRIGGER_TYPE_HTTP ? 1 : 0
-  name    = local.function_name
+  name    = var.function_name
   project = var.project
 
   entry_point  = var.entry_point
@@ -25,7 +25,7 @@ resource "google_cloudfunctions_function" "function_http" {
 
 resource "google_cloudfunctions_function" "function_event" {
   count   = var.trigger_type != local.TRIGGER_TYPE_HTTP ? 1 : 0
-  name    = local.function_name
+  name    = var.function_name
   project = var.project
 
   entry_point = var.entry_point

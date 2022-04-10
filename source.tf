@@ -27,7 +27,7 @@ data "archive_file" "source_archive" {
 }
 
 resource "google_storage_bucket_object" "source_object" {
-  name   = "source-${local.function_name}-${data.archive_file.source_archive.output_md5}.zip"
+  name   = "source-${var.function_name}-${data.archive_file.source_archive.output_md5}.zip"
   bucket = var.cf_src_bucket
   source = data.archive_file.source_archive.output_path
 }

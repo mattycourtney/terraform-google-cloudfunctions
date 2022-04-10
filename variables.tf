@@ -85,7 +85,7 @@ variable "max_instances" {
 
 variable "service_account_email" {
   type        = string
-  description = "Self-provided service account to run the function with, stored in CI/CD env variables"
+  description = "Self-provided service account to run the function with"
 }
 
 variable "environment_variables" {
