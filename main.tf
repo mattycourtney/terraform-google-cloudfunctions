@@ -13,8 +13,8 @@ resource "google_cloudfunctions_function" "function_http" {
   max_instances       = var.max_instances
 
   service_account_email = var.service_account_email
-  environment_variables = local.environment_variables
-  labels                = local.labels
+  environment_variables = var.environment_variables
+  labels                = var.labels
 
   source_archive_bucket = var.cf_src_bucket
   source_archive_object = google_storage_bucket_object.source_object.name
@@ -36,8 +36,8 @@ resource "google_cloudfunctions_function" "function_event" {
   max_instances       = var.max_instances
 
   service_account_email = var.service_account_email
-  environment_variables = local.environment_variables
-  labels                = local.labels
+  environment_variables = var.environment_variables
+  labels                = var.labels
 
   source_archive_bucket = var.cf_src_bucket
   source_archive_object = google_storage_bucket_object.source_object.name

@@ -1,17 +1,13 @@
-variable "sls_project_name" {
-  type        = string
-  description = "Project name composed of {project_name}-{project_env}, stored in CI/CD env variables"
-}
+
 
 variable "function_name" {
   type        = string
-  description = "Function name. If empty, it defaults to {var.sls_project_name}-{var.entry_point}"
-  default     = ""
+  description = "Function name"
 }
 
 variable "cf_src_bucket" {
   type        = string
-  description = "Source archive bucket for Cloud Functions, stored in CI/CD env variables"
+  description = "Source archive bucket for Cloud Functions"
 }
 
 variable "source_dir" {
@@ -49,12 +45,12 @@ variable "trigger_event_resource" {
 
 variable "project" {
   type        = string
-  description = "Google Cloud Platform project id, stored in CI/CD env variables"
+  description = "Google Cloud Platform project id"
 }
 
 variable "region" {
   type        = string
-  default     = "europe-west3"
+  default     = "europe-west6"
   description = "Region for Cloud Functions and accompanying resources"
 }
 
@@ -72,6 +68,7 @@ variable "runtime" {
 variable "available_memory_mb" {
   type        = string
   description = "Memory (in MB), available to the function. Default value is 256MB. Allowed values are: 128MB, 256MB, 512MB, 1024MB, and 2048MB"
+  default     = "256MB"
 }
 
 variable "timeout" {
@@ -112,7 +109,7 @@ variable "schedule" {
 variable "schedule_time_zone" {
   type        = string
   description = "Specifies the time zone to be used in interpreting schedule. The value of this field must be a time zone name from the tz database"
-  default     = "Europe/Prague"
+  default     = "UTC"
 }
 
 variable "schedule_retry_config" {
@@ -151,42 +148,6 @@ variable "vpc_access_connector" {
   default     = null
 }
 
-variable "gitlab_project_path" {
-  type        = string
-  description = "A GitLab path to the project (CI_PROJECT_PATH)"
-}
-
-variable "sls_project_env" {
-  type        = string
-  description = "Project's SLS environment."
-}
-
-variable "vault_sync_enabled" {
-  type        = bool
-  description = "Set this value to true if you want to sync secrets from Vault."
-}
-
-variable "vault_sync_type" {
-  type        = string
-  description = "Select sync type for Vault (env or secret_manager)."
-  default     = "secret_manager"
-
-  validation {
-    condition     = can(regex("^(secret_manager|env)$", var.vault_sync_type))
-    error_message = "Possible values are: secret_manager or env."
-  }
-}
-
-variable "communication_channel" {
-  description = "A Slack channel where we can talk about your function."
-  default     = ""
-}
-
-variable "responsible_person" {
-  description = "Who is the author / maintainer of the function."
-  default     = ""
-}
-
 
 locals {
   // Constants
@@ -195,33 +156,6 @@ locals {
   TRIGGER_TYPE_SCHEDULER = "scheduler"
   TRIGGER_TYPE_BUCKET    = "bucket"
 
-  VAULT_SYNC_TYPE_SECRET_MANAGER = "secret_manager"
-  VAULT_SYNC_TYPE_ENV            = "env"
-
   source_dir        = var.source_dir != "" ? "${path.root}/${var.source_dir}" : path.root
-  function_name     = var.function_name != "" ? var.function_name : "${var.sls_project_name}-${var.entry_point}"
   region_app_engine = var.region_app_engine != "" ? var.region_app_engine : var.region
-  labels = merge({
-    deployment-tool       = "terraform"
-    gitlab-path           = replace(var.gitlab_project_path, "/", "_")
-    vault-sync            = var.vault_sync_enabled ? var.vault_sync_type : ""
-    alert-channel         = local.alerts_enabled ? replace(var.alert_channel, "#", "") : ""
-    communication-channel = replace(var.communication_channel, "#", "")
-    responsible-person    = var.responsible_person
-    bill_project          = var.project
-    bill_path             = lower(try(var.labels.bill_path, try(var.labels.app, "")))
-  }, var.labels)
-  vault_path = "kw/secret/${var.gitlab_project_path}/runtime/${var.sls_project_env}"
-
-  is_vault_sync_env            = var.vault_sync_enabled && var.vault_sync_type == local.VAULT_SYNC_TYPE_ENV
-  is_vault_sync_secret_manager = var.vault_sync_enabled && var.vault_sync_type == local.VAULT_SYNC_TYPE_SECRET_MANAGER
-
-  secret_id = local.function_name
-
-  default_environment_variables = {
-    GCP_PROJECT_ID : var.project,
-    GCP_SECRET_ID : local.secret_id
-  }
-
-  environment_variables = local.is_vault_sync_env ? merge(local.default_environment_variables, var.environment_variables, data.vault_generic_secret.secret[0].data) : merge(local.default_environment_variables, var.environment_variables)
 }
