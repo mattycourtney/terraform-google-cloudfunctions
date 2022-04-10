@@ -66,9 +66,9 @@ variable "runtime" {
 }
 
 variable "available_memory_mb" {
-  type        = string
-  description = "Memory (in MB), available to the function. Default value is 256MB. Allowed values are: 128MB, 256MB, 512MB, 1024MB, and 2048MB"
-  default     = "256MB"
+  type        = number
+  description = "Memory (in MB), available to the function. Default value is 256. Allowed values are: 128, 256, 512, 1024, and 2048"
+  default     = "256"
 }
 
 variable "timeout" {
@@ -85,7 +85,7 @@ variable "max_instances" {
 
 variable "service_account_email" {
   type        = string
-  description = "Self-provided service account to run the function with, stored in CI/CD env variables"
+  description = "Self-provided service account to run the function with"
 }
 
 variable "environment_variables" {
