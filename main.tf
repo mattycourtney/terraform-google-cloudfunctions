@@ -19,7 +19,8 @@ resource "google_cloudfunctions_function" "function_http" {
   source_archive_bucket = var.cf_src_bucket
   source_archive_object = google_storage_bucket_object.source_object.name
 
-  vpc_connector = var.vpc_access_connector
+  vpc_connector    = var.vpc_access_connector
+  ingress_settings = var.ingress_settings
 }
 
 resource "google_cloudfunctions_function" "function_event" {
@@ -42,7 +43,8 @@ resource "google_cloudfunctions_function" "function_event" {
   source_archive_bucket = var.cf_src_bucket
   source_archive_object = google_storage_bucket_object.source_object.name
 
-  vpc_connector = var.vpc_access_connector
+  vpc_connector    = var.vpc_access_connector
+  ingress_settings = var.ingress_settings
 
   event_trigger {
     event_type = var.trigger_type == local.TRIGGER_TYPE_SCHEDULER ? "google.pubsub.topic.publish" : var.trigger_event_type

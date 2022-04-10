@@ -148,6 +148,16 @@ variable "vpc_access_connector" {
   default     = null
 }
 
+variable "ingress_settings" {
+  type        = string
+  description = "Restrict whether a function can be invoked by resources outside your Google Cloud project or VPC Service Controls service perimeter"
+  default     = "ALLOW_INTERNAL_AND_GCLB"
+
+  validation {
+    condition     = can(regex("^(ALLOW_ALL|ALLOW_INTERNAL_AND_GCLB|ALLOW_INTERNAL_ONLY)$", var.ingress_settings))
+    error_message = "Possible values are: ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB, ALLOW_INTERNAL_ONLY."
+  }
+}
 
 locals {
   // Constants
